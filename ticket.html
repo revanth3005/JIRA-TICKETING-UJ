@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticket System</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      box-sizing: border-box;
+      font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+        sans-serif;
+      background-color: black;
+      color: white;
+    }
+
+    body {
+      padding: 20px;
+    }
+
+    #ticket-form {
+      display: flex;
+      flex-direction: column;
+      width: 600px;
+      border: 2px solid white;
+      border-radius: 5px;
+      padding: 40px;
+    }
+
+    .ticketBody {
+      border: 3px solid lightcoral;
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      /* background-color: lightcyan; */
+      gap: 10px;
+      font-size: 20px;
+    }
+
+    .tickSub {
+      text-align: center;
+    }
+
+    .bt {
+      padding: 8px;
+      color: white;
+      background-color: purple;
+      font-size: 20px;
+    }
+
+    .btBox {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .submitBt {
+      padding: 8px;
+      color: white;
+      background-color: black;
+      border-color: white;
+      font-size: 20px;
+    }
+
+    .submitBt:hover {
+      cursor: pointer;
+    }
+
+    label {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    input {
+      height: 30px;
+      border-radius: 5px;
+      border-color: white;
+      font-size: 20px;
+    }
+
+    textarea {
+      height: 100px;
+      border-radius: 5px;
+      border-color: white;
+      font-size: 20px;
+    }
+
+    #tickets {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .mainBody {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-content: center;
+      align-items: center;
+    }
+
+    .headerr {
+      color: purple;
+    }
+
+    h3 {
+      padding-bottom: 10px;
+    }
+  </style>
+
+  <body>
+    <div class="mainBody">
+      <h1 class="headerr">Ticket System</h1>
+      <h3>Submit a Ticket</h3>
+      <a href="Home.html" target="_blank" rel="noopener noreferrer">back</a>
+      <form id="ticket-form">
+        <label for="name">Associate Name:</label>
+        <input type="text" id="name" required />
+        <br />
+        <label for="ID">Associate ID:</label>
+        <input type="text" id="ID" required />
+        <br />
+        <label for="subject">Summary:</label>
+        <input type="text" id="subject" required />
+        <br />
+        <label for="message">Justification:</label>
+        <textarea id="message" rows="5" required></textarea>
+        <br />
+        <button type="submit" class="submitBt">Submit Ticket</button>
+      </form>
+    </div>
+    <div id="tickets"></div>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script>
+      emailjs.init("2TezegSK_UK0wPZ_f");
+      const tickets = [];
+      const ticketList = document.getElementById("tickets");
+      const ticketForm = document.getElementById("ticket-form");
+
+      ticketForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("ID").value;
+        const subject = document.getElementById("subject").value;
+        const message = document.getElementById("message").value;
+
+        // Create a new ticket object
+        const ticket = {
+          name,
+          email,
+          subject,
+          message,
+          createdAt: new Date(),
+          status: "Open",
+          resolved: false,
+          closed: false,
+          reopen: false,
+          ticketID: `IT-${Math.floor(Math.random() * 10000) + 1}`,
+        };
+
+        tickets.push(ticket);
+
+        createTicketElement(tickets);
+        sendMail(ticket.ticketID); //rendering created tickets
+        // Clear the form
+        ticketForm.reset();
+      });
+
+      //progressing ticket
+      function ticketProgress(index) {
+        tickets[index].resolved = true;
+        tickets[index].status = "In Progress";
+        createTicketElement(tickets);
+      }
+      function ticketResolved(index) {
+        tickets[index].resolved = false;
+        tickets[index].closed = true;
+        tickets[index].status = "Resolved";
+        createTicketElement(tickets);
+      }
+      function ticketClosed(index) {
+        tickets[index].closed = false;
+        tickets[index].reopen = true;
+        tickets[index].status = "Closed";
+        createTicketElement(tickets);
+      }
+      function ticketOpen(index) {
+        tickets[index].resolved = false;
+        tickets[index].closed = false;
+        tickets[index].reopen = false;
+        tickets[index].status = "Re-opened";
+        createTicketElement(tickets);
+      }
+
+      function createTicketElement(tickets) {
+        const ticketHTML = tickets
+          .map(
+            (ticket, index) => `
+            <div>
+                <div class='ticketBody'>
+                <h2 class='tickSub'>${ticket.subject}</h3>
+                <p><strong>Associate Name:</strong> ${ticket.name}</p>
+                <p><strong>Associate ID:</strong> ${ticket.email}</p>
+                <p><strong>Justification:</strong> ${ticket.message}</p>
+                <p><strong>Created At:</strong> ${ticket.createdAt.toLocaleString()}</p>
+                <p><strong>Status:</strong> ${ticket.status}</p>
+                <p><strong>Ticket-ID:</strong> ${ticket.ticketID}</p>
+                <div class='btBox'>
+                    ${
+                      !ticket.resolved && !ticket.closed && !ticket.reopen
+                        ? `<button class="bt" onclick="ticketProgress(${index})">mark as progress</button>`
+                        : ""
+                    }
+                    ${
+                      ticket.resolved
+                        ? `<button class="bt" onclick="ticketResolved(${index})">mark as resolved</button>`
+                        : ""
+                    }
+                    
+                    ${
+                      ticket.closed
+                        ? `<button class="bt" onclick="ticketClosed(${index})">mark as closed</button>`
+                        : ""
+                    }
+                    ${
+                      ticket.reopen
+                        ? `<button class="bt" onclick="ticketOpen(${index})">re-open</button>`
+                        : ""
+                    }
+                    
+
+                    </div>
+                </div>
+                </div>
+            `
+          )
+          .join("");
+        document.getElementById("tickets").innerHTML = ticketHTML;
+      }
+
+      function sendMail(ticketId) {
+        let templateParams = {
+          name: document.getElementById("name").value,
+          email: document.getElementById("ID").value,
+          subject: document.getElementById("subject").value,
+          message: document.getElementById("message").value,
+          ticketID: ticketId,
+        };
+
+        console.log(templateParams);
+        console.log(document.getElementById("name").value);
+        emailjs
+          .send("service_mihwf3z", "template_vrcbmul", templateParams)
+          .then(
+            function (response) {
+              console.log("Email sent successfully", response);
+              // You can handle success here, e.g., display a thank you message
+            },
+            function (error) {
+              console.error("Failed to send email", error);
+              // You can handle errors here, e.g., display an error message
+            }
+          );
+      }
+    </script>
+  </body>
+</html>
