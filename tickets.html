@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding-left: 10px;
+        box-sizing: border-box;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        background-color: black;
+        color: white;
+      }
+      body {
+        background-color: black;
+        color: white;
+      }
+      .ticketBody {
+        border: 3px solid lightcoral;
+        border-radius: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 20px;
+      }
+      .tickSub {
+        text-align: center;
+      }
+      #viewTickets {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      .bt {
+        padding: 8px;
+        color: white;
+        background-color: purple;
+        font-size: 20px;
+        border-radius: 5px;
+        border-color: purple;
+      }
+
+      .btBox {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+      }
+
+      .line {
+        color: white;
+        width: 100%;
+      }
+      .btSee {
+      font-size: 25px;
+      padding: 8px;
+      color: white;
+      background-color: black;
+      border-color: white;
+      margin-top: 10px;
+    }
+    a {
+      text-decoration: none;
+    }
+    .btSee:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
+    a:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
+    </style>
+  </head>
+  <body>
+   
+    <button class="btSee">
+        <a href="ticket.html" 
+          >Create Ticket</a
+        >
+      </button>
+      <button class="btSee">
+        <a href="Home.html" 
+          >Home</a
+        >
+      </button>
+      <h1>Tickets</h1>
+    <div id="viewTickets"></div>
+    <script>
+      let tickets = JSON.parse(localStorage.getItem("tickets")) || [];
+    
+      function createTicketElement(tickets) {
+        const ticketHTML = tickets
+          .map(
+            (ticket, index) => `
+            <div>
+                <div class='ticketBody'>
+                <h2 class='tickSub'>${ticket.subject}</h3>
+                    <hr class='line'/>
+                <p><strong>Associate Name:</strong> ${ticket.name}</p>
+                <p><strong>Associate ID:</strong> ${ticket.email}</p>
+                <p><strong>Justification:</strong> ${ticket.message}</p>
+                <p><strong>Created At:</strong> ${ticket.createdAt.toLocaleString()}</p>
+                <p><strong>Status:</strong> ${ticket.status}</p>
+                <p><strong>Ticket-ID:</strong> ${ticket.ticketID}</p>
+                <div class='btBox'>
+                    ${
+                      !ticket.resolved && !ticket.closed && !ticket.reopen
+                        ? `<button class="bt" onclick="ticketProgress(${index})">mark as progress</button>`
+                        : ""
+                    }
+                    ${
+                      ticket.resolved
+                        ? `<button class="bt" onclick="ticketResolved(${index})">mark as resolved</button>`
+                        : ""
+                    }
+                    
+                    ${
+                      ticket.closed
+                        ? `<button class="bt" onclick="ticketClosed(${index})">mark as closed</button>`
+                        : ""
+                    }
+                    ${
+                      ticket.reopen
+                        ? `<button class="bt" onclick="ticketOpen(${index})">re-open</button>`
+                        : ""
+                    }
+                    
+
+                    </div>
+                </div>
+                </div>
+            `
+          )
+          .join("");
+        document.getElementById("viewTickets").innerHTML = ticketHTML;
+      }
+      createTicketElement(tickets);
+
+      function ticketProgress(index) {
+        tickets[index].resolved = true;
+        tickets[index].status = "In Progress";
+        localStorage.setItem("tickets", JSON.stringify(tickets));
+        createTicketElement(tickets);
+      }
+      function ticketResolved(index) {
+        tickets[index].resolved = false;
+        tickets[index].closed = true;
+        tickets[index].status = "Resolved";
+        localStorage.setItem("tickets", JSON.stringify(tickets));
+        createTicketElement(tickets);
+      }
+      function ticketClosed(index) {
+        tickets[index].closed = false;
+        tickets[index].reopen = true;
+        tickets[index].status = "Closed";
+        localStorage.setItem("tickets", JSON.stringify(tickets));
+        createTicketElement(tickets);
+      }
+      function ticketOpen(index) {
+        tickets[index].resolved = false;
+        tickets[index].closed = false;
+        tickets[index].reopen = false;
+        tickets[index].status = "Re-opened";
+        
+        createTicketElement(tickets);
+      }
+    </script>
+  </body>
+</html>

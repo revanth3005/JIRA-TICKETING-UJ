@@ -28,34 +28,6 @@
       padding: 40px;
     }
 
-    .ticketBody {
-      border: 3px solid lightcoral;
-      border-radius: 10px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      /* background-color: lightcyan; */
-      gap: 10px;
-      font-size: 20px;
-    }
-
-    .tickSub {
-      text-align: center;
-    }
-
-    .bt {
-      padding: 8px;
-      color: white;
-      background-color: purple;
-      font-size: 20px;
-    }
-
-    .btBox {
-      display: flex;
-      flex-direction: row;
-      gap: 10px;
-    }
-
     .submitBt {
       padding: 8px;
       color: white;
@@ -66,6 +38,8 @@
 
     .submitBt:hover {
       cursor: pointer;
+      background-color: white;
+      color: black;
     }
 
     label {
@@ -110,13 +84,34 @@
     h3 {
       padding-bottom: 10px;
     }
+    .btSee {
+      font-size: 25px;
+      padding: 8px;
+      color: white;
+      background-color: black;
+      border-color: white;
+      margin-top: 10px;
+    }
+    a {
+      text-decoration: none;
+    }
+    .btSee:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
+    a:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
   </style>
 
   <body>
     <div class="mainBody">
       <h1 class="headerr">Ticket System</h1>
       <h3>Submit a Ticket</h3>
-      <a href="Home.html" target="_blank" rel="noopener noreferrer">back</a>
+     
       <form id="ticket-form">
         <label for="name">Associate Name:</label>
         <input type="text" id="name" required />
@@ -132,6 +127,16 @@
         <br />
         <button type="submit" class="submitBt">Submit Ticket</button>
       </form>
+      <button class="btSee">
+        <a href="tickets.html"
+          >view created tickets</a
+        >
+      </button>
+      <button class="btSee">
+        <a href="Home.html" 
+          >HOME</a
+        >
+      </button>
     </div>
     <div id="tickets"></div>
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
@@ -164,84 +169,38 @@
         };
 
         tickets.push(ticket);
-
-        createTicketElement(tickets);
-        sendMail(ticket.ticketID); //rendering created tickets
+        localStorage.setItem("tickets", JSON.stringify(tickets));
+        // createTicketElement(tickets);
+        // sendMail(ticket.ticketID); //rendering created tickets
         // Clear the form
         ticketForm.reset();
       });
 
       //progressing ticket
-      function ticketProgress(index) {
-        tickets[index].resolved = true;
-        tickets[index].status = "In Progress";
-        createTicketElement(tickets);
-      }
-      function ticketResolved(index) {
-        tickets[index].resolved = false;
-        tickets[index].closed = true;
-        tickets[index].status = "Resolved";
-        createTicketElement(tickets);
-      }
-      function ticketClosed(index) {
-        tickets[index].closed = false;
-        tickets[index].reopen = true;
-        tickets[index].status = "Closed";
-        createTicketElement(tickets);
-      }
-      function ticketOpen(index) {
-        tickets[index].resolved = false;
-        tickets[index].closed = false;
-        tickets[index].reopen = false;
-        tickets[index].status = "Re-opened";
-        createTicketElement(tickets);
-      }
-
-      function createTicketElement(tickets) {
-        const ticketHTML = tickets
-          .map(
-            (ticket, index) => `
-            <div>
-                <div class='ticketBody'>
-                <h2 class='tickSub'>${ticket.subject}</h3>
-                <p><strong>Associate Name:</strong> ${ticket.name}</p>
-                <p><strong>Associate ID:</strong> ${ticket.email}</p>
-                <p><strong>Justification:</strong> ${ticket.message}</p>
-                <p><strong>Created At:</strong> ${ticket.createdAt.toLocaleString()}</p>
-                <p><strong>Status:</strong> ${ticket.status}</p>
-                <p><strong>Ticket-ID:</strong> ${ticket.ticketID}</p>
-                <div class='btBox'>
-                    ${
-                      !ticket.resolved && !ticket.closed && !ticket.reopen
-                        ? `<button class="bt" onclick="ticketProgress(${index})">mark as progress</button>`
-                        : ""
-                    }
-                    ${
-                      ticket.resolved
-                        ? `<button class="bt" onclick="ticketResolved(${index})">mark as resolved</button>`
-                        : ""
-                    }
-                    
-                    ${
-                      ticket.closed
-                        ? `<button class="bt" onclick="ticketClosed(${index})">mark as closed</button>`
-                        : ""
-                    }
-                    ${
-                      ticket.reopen
-                        ? `<button class="bt" onclick="ticketOpen(${index})">re-open</button>`
-                        : ""
-                    }
-                    
-
-                    </div>
-                </div>
-                </div>
-            `
-          )
-          .join("");
-        document.getElementById("tickets").innerHTML = ticketHTML;
-      }
+      // function ticketProgress(index) {
+      //   tickets[index].resolved = true;blanl
+      //   tickets[index].status = "In Progress";
+      //   createTicketElement(tickets);
+      // }
+      // function ticketResolved(index) {
+      //   tickets[index].resolved = false;
+      //   tickets[index].closed = true;
+      //   tickets[index].status = "Resolved";
+      //   createTicketElement(tickets);
+      // }
+      // function ticketClosed(index) {
+      //   tickets[index].closed = false;
+      //   tickets[index].reopen = true;
+      //   tickets[index].status = "Closed";
+      //   createTicketElement(tickets);
+      // }
+      // function ticketOpen(index) {
+      //   tickets[index].resolved = false;
+      //   tickets[index].closed = false;
+      //   tickets[index].reopen = false;
+      //   tickets[index].status = "Re-opened";
+      //   createTicketElement(tickets);
+      // }
 
       function sendMail(ticketId) {
         let templateParams = {
