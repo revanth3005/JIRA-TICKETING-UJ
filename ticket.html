@@ -89,7 +89,7 @@
 
     #tickets {
       margin-top: 10px;
-      display: flex;
+      display: none;
       flex-direction: row;
       gap: 20px;
       flex-wrap: wrap;
@@ -110,32 +110,77 @@
     h3 {
       padding-bottom: 10px;
     }
+    .viewTicketsBt {
+      padding: 8px;
+      color: white;
+      background-color: black;
+      border-color: white;
+      font-size: 20px;
+      margin-top: 10px;
+      margin-left: 40%;
+    }
+    .viewTickets {
+      padding: 8px;
+      color: white;
+      background-color: black;
+      border-color: white;
+      font-size: 20px;
+      margin-top: 10px;
+      /* margin-left: 40% */
+    }
+    h1,
+    h3 {
+      text-align: center;
+    }
+
+    .viewTicketsBt:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
+    .viewTickets:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
   </style>
 
   <body>
     <div class="mainBody">
-      <h1 class="headerr">Ticket System</h1>
-      <h3>Submit a Ticket</h3>
-      <a href="Home.html" target="_blank" rel="noopener noreferrer">back</a>
-      <form id="ticket-form">
-        <label for="name">Associate Name:</label>
-        <input type="text" id="name" required />
-        <br />
-        <label for="ID">Associate ID:</label>
-        <input type="text" id="ID" required />
-        <br />
-        <label for="subject">Summary:</label>
-        <input type="text" id="subject" required />
-        <br />
-        <label for="message">Justification:</label>
-        <textarea id="message" rows="5" required></textarea>
-        <br />
-        <button type="submit" class="submitBt">Submit Ticket</button>
-      </form>
+      <div id="viewBody">
+        <h1 class="headerr">Ticket System</h1>
+        <h3>Submit a Ticket</h3>
+        <form id="ticket-form">
+          <label for="name">Associate Name:</label>
+          <input type="text" id="name" required />
+          <br />
+          <label for="ID">Associate ID:</label>
+          <input type="text" id="ID" required />
+          <br />
+          <label for="subject">Summary:</label>
+          <input type="text" id="subject" required />
+          <br />
+          <label for="message">Justification:</label>
+          <textarea id="message" rows="5" required></textarea>
+          <br />
+          <button type="submit" class="submitBt">Submit Ticket</button>
+        </form>
+        <button class="viewTicketsBt" id="viewT">view Tickets</button>
+      </div>
     </div>
+    <button class="viewTickets" id="viewBack">Back</button>
     <div id="tickets"></div>
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
+      document.getElementById("viewT").addEventListener("click", () => {
+        document.getElementById("viewBody").style.display = "none";
+        document.getElementById("tickets").style.display = "flex";
+      });
+      document.getElementById("viewBack").addEventListener("click", () => {
+        document.getElementById("viewBody").style.display = "";
+        document.getElementById("tickets").style.display = "none";
+      });
+
       emailjs.init("2TezegSK_UK0wPZ_f");
       const tickets = [];
       const ticketList = document.getElementById("tickets");
@@ -164,8 +209,8 @@
         };
 
         tickets.push(ticket);
-
         createTicketElement(tickets);
+        alert(`Ticket Created, #${ticket.ticketID}`);
         sendMail(ticket.ticketID); //rendering created tickets
         // Clear the form
         ticketForm.reset();
