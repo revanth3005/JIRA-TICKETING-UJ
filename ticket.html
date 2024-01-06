@@ -143,11 +143,49 @@
       background-color: white;
       color: black;
     }
+
+    /* home  */
+    .placing {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      gap: 0px;
+      flex-direction: column;
+      height: 80vh;
+    }
+    .place {
+      border: 1px solid lightseagreen;
+      padding: 50px;
+      text-align: center;
+      background-color: lightseagreen;
+      color: white;
+      border-radius: 5px;
+    }
+    h1 {
+      font-size: 50px;
+    }
+    h2 {
+      font-size: 40px;
+      background-color: lightseagreen;
+    }
+    p {
+      font-size: 20px;
+      background-color: lightseagreen;
+    }
   </style>
 
   <body>
-    <div class="mainBody">
-      <button class="viewTickets" ><a href="Home.html">Home</a></button>
+    <div class="placing" id="mainPage">
+      <h1>Welcome to Ticket Creation Demo</h1>
+      <div class="place">
+        <h2>Create Ticket</h2>
+        <p id="navigateToTicket">click here</p>
+      </div>
+    </div>
+
+    <div class="mainBody" id="mainDD" style="display: none">
+      <button class="viewTickets" id="homeBt">Home</button>
       <div id="viewBody">
         <h1 class="headerr">Ticket System</h1>
         <h3>Submit a Ticket</h3>
@@ -167,20 +205,35 @@
           <button type="submit" class="submitBt">Submit Ticket</button>
         </form>
         <button class="viewTicketsBt" id="viewT">view Tickets</button>
-       
       </div>
     </div>
-    <button class="viewTickets" id="viewBack">Back</button>
+    <button class="viewTickets" id="viewBack" style="display: none">
+      Back
+    </button>
     <div id="tickets"></div>
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
     <script>
+      document
+        .getElementById("navigateToTicket")
+        .addEventListener("click", () => {
+          document.getElementById("mainPage").style.display = "none";
+          document.getElementById("mainDD").style.display = "flex";
+        });
       document.getElementById("viewT").addEventListener("click", () => {
         document.getElementById("viewBody").style.display = "none";
         document.getElementById("tickets").style.display = "flex";
+        document.getElementById("viewBack").style.display = "flex";
       });
       document.getElementById("viewBack").addEventListener("click", () => {
         document.getElementById("viewBody").style.display = "";
         document.getElementById("tickets").style.display = "none";
+        document.getElementById("viewBack").style.display = "none";
+      });
+      document.getElementById("homeBt").addEventListener("click", () => {
+        document.getElementById("mainDD").style.display = "none";
+        document.getElementById("mainPage").style.display = "flex";
+        // document.getElementById("tickets").style.display = "none";
+        // document.getElementById("viewBack").style.display = "none";
       });
 
       emailjs.init("2TezegSK_UK0wPZ_f");
