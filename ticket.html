@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <!-- <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>     -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-database.js"></script> -->
     <title>Ticket System</title>
   </head>
   <style>
@@ -110,6 +116,7 @@
     h3 {
       padding-bottom: 10px;
     }
+
     .viewTicketsBt {
       padding: 8px;
       color: white;
@@ -119,6 +126,7 @@
       margin-top: 10px;
       margin-left: 40%;
     }
+
     .viewTickets {
       padding: 8px;
       color: white;
@@ -128,6 +136,7 @@
       margin-top: 10px;
       /* margin-left: 40% */
     }
+
     h1,
     h3 {
       text-align: center;
@@ -138,6 +147,7 @@
       background-color: white;
       color: black;
     }
+
     .viewTickets:hover {
       cursor: pointer;
       background-color: white;
@@ -154,6 +164,7 @@
       flex-direction: column;
       height: 80vh;
     }
+
     .place {
       border: 1px solid lightseagreen;
       padding: 50px;
@@ -162,25 +173,49 @@
       color: white;
       border-radius: 5px;
     }
+
     h1 {
       font-size: 50px;
     }
+
     h2 {
       font-size: 40px;
       background-color: lightseagreen;
+      text-align: center;
     }
+
     p {
       font-size: 20px;
-      background-color: lightseagreen;
+      /* background-color: lightseagreen; */
+    }
+    .placeTwo {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      gap: 50px;
     }
   </style>
 
   <body>
-    <div class="placing" id="mainPage">
+    <div id="mainPage">
       <h1>Welcome to Ticket Creation Demo</h1>
-      <div class="place">
-        <h2>Create Ticket</h2>
-        <p id="navigateToTicket">click here</p>
+      <div class="placeTwo">
+        <div class="placing">
+          <div class="place">
+            <h2>Create Ticket</h2>
+            <button class="viewTickets" id="navigateToTicket">
+              click here
+            </button>
+          </div>
+        </div>
+        <div class="placing" id="mainPage">
+          <div class="place">
+            <h2>View Tickets</h2>
+            <button class="viewTickets" id="navigateToViewTicket">
+              click here
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -204,40 +239,310 @@
           <br />
           <button type="submit" class="submitBt">Submit Ticket</button>
         </form>
-        <button class="viewTicketsBt" id="viewT">view Tickets</button>
+        <!-- <button class="viewTicketsBt" id="viewT">view Tickets</button> -->
       </div>
     </div>
     <button class="viewTickets" id="viewBack" style="display: none">
       Back
     </button>
+    <h2 id="viewBackText" style="display: none">Created Tickets</h2>
     <div id="tickets"></div>
     <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+
     <script>
+      // firebase start
+      const firebaseConfig = {
+        apiKey: "AIzaSyAocvnDOcdk-xOxI3bgIKFv_1JCtHCbW3Y",
+        authDomain: "ui-ticket.firebaseapp.com",
+        databaseURL:
+          "https://ui-ticket-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "ui-ticket",
+        storageBucket: "ui-ticket.appspot.com",
+        messagingSenderId: "402709018419",
+        appId: "1:402709018419:web:e328c5a109d5a29814b046",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+
+      // const db = firebase.database();
+      console.log(firebase.database().ref("JIRA"));
+
+      const ref = firebase.database().ref("JIRA");
+      // firebase end
+
       document
         .getElementById("navigateToTicket")
         .addEventListener("click", () => {
           document.getElementById("mainPage").style.display = "none";
           document.getElementById("mainDD").style.display = "flex";
         });
-      document.getElementById("viewT").addEventListener("click", () => {
-        document.getElementById("viewBody").style.display = "none";
-        document.getElementById("tickets").style.display = "flex";
-        document.getElementById("viewBack").style.display = "flex";
-      });
+      // document.getElementById("viewT").addEventListener("click", () => {
+      //   document.getElementById("viewBody").style.display = "none";
+      //   document.getElementById("tickets").style.display = "flex";
+      //   document.getElementById("viewBack").style.display = "flex";
+      // });
       document.getElementById("viewBack").addEventListener("click", () => {
+        document.getElementById("mainPage").style.display = "block";
         document.getElementById("viewBody").style.display = "";
         document.getElementById("tickets").style.display = "none";
         document.getElementById("viewBack").style.display = "none";
+        document.getElementById("viewBackText").style.display = "none";
       });
       document.getElementById("homeBt").addEventListener("click", () => {
         document.getElementById("mainDD").style.display = "none";
-        document.getElementById("mainPage").style.display = "flex";
+        document.getElementById("mainPage").style.display = "block";
         // document.getElementById("tickets").style.display = "none";
         // document.getElementById("viewBack").style.display = "none";
       });
+      document
+        .getElementById("navigateToViewTicket")
+        .addEventListener("click", () => {
+          document.getElementById("mainPage").style.display = "none";
+          document.getElementById("viewBody").style.display = "none";
+          document.getElementById("tickets").style.display = "flex";
+          document.getElementById("viewBack").style.display = "flex";
+          document.getElementById("viewBackText").style.display = "block";
+
+          var ticketsArray = [];
+          var ticketsRef = firebase.database().ref("JIRA");
+
+          var getTickets = new Promise((resolve, reject) => {
+            ticketsRef.once(
+              "value",
+              function (snapshot) {
+                snapshot.forEach(function (childSnapshot) {
+                  var childKey = childSnapshot.key;
+                  var childData = childSnapshot.val();
+                  console.log(childKey);
+                  console.log(childData);
+                  ticketsArray.push({ key: childKey, data: childData });
+                });
+                resolve(ticketsArray);
+              },
+              function (error) {
+                reject(error);
+              }
+            );
+          });
+
+          getTickets
+            .then(function (ticketsArray) {
+              // Use tickets array here
+              console.log(ticketsArray);
+              createTicketElement(ticketsArray);
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+        });
+
+      //progressing ticket
+      function ticketProgress(id) {
+        console.log(id);
+        // tickets[index].resolved = true;
+        // tickets[index].status = "In Progress";
+        try {
+          ref
+            .child(id)
+            .update({ resolved: true, status: "In Progress" })
+            .then(() => {
+              console.log("Status updated successfully");
+
+              var ticketsArray = [];
+              var ticketsRef = firebase.database().ref("JIRA");
+
+              var getTickets = new Promise((resolve, reject) => {
+                ticketsRef.once(
+                  "value",
+                  function (snapshot) {
+                    snapshot.forEach(function (childSnapshot) {
+                      var childKey = childSnapshot.key;
+                      var childData = childSnapshot.val();
+                      console.log(childKey);
+                      console.log(childData);
+                      ticketsArray.push({ key: childKey, data: childData });
+                    });
+                    resolve(ticketsArray);
+                  },
+                  function (error) {
+                    reject(error);
+                  }
+                );
+              });
+
+              getTickets
+                .then(function (ticketsArray) {
+                  // Use tickets array here
+                  console.log(ticketsArray);
+                  createTicketElement(ticketsArray);
+                })
+                .catch(function (error) {
+                  console.error(error);
+                });
+            })
+            .catch((error) => console.error("Error updating status:", error));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      function ticketResolved(id) {
+        // tickets[index].resolved = false;
+        // tickets[index].closed = true;
+        // tickets[index].status = "Resolved";
+        // createTicketElement(tickets);
+        try {
+          ref
+            .child(id)
+            .update({ resolved: false, closed: true, status: "Resolved" })
+            .then(() => {
+              console.log("Status updated successfully");
+
+              var ticketsArray = [];
+              var ticketsRef = firebase.database().ref("JIRA");
+
+              var getTickets = new Promise((resolve, reject) => {
+                ticketsRef.once(
+                  "value",
+                  function (snapshot) {
+                    snapshot.forEach(function (childSnapshot) {
+                      var childKey = childSnapshot.key;
+                      var childData = childSnapshot.val();
+                      console.log(childKey);
+                      console.log(childData);
+                      ticketsArray.push({ key: childKey, data: childData });
+                    });
+                    resolve(ticketsArray);
+                  },
+                  function (error) {
+                    reject(error);
+                  }
+                );
+              });
+
+              getTickets
+                .then(function (ticketsArray) {
+                  // Use tickets array here
+                  console.log(ticketsArray);
+                  createTicketElement(ticketsArray);
+                })
+                .catch(function (error) {
+                  console.error(error);
+                });
+            })
+            .catch((error) => console.error("Error updating status:", error));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      function ticketClosed(id) {
+        // tickets[index].closed = false;
+        // tickets[index].reopen = true;
+        // tickets[index].status = "Closed";
+        // createTicketElement(tickets);
+        try {
+          ref
+            .child(id)
+            .update({ reopen: true, closed: false, status: "Closed" })
+            .then(() => {
+              console.log("Status updated successfully");
+
+              var ticketsArray = [];
+              var ticketsRef = firebase.database().ref("JIRA");
+
+              var getTickets = new Promise((resolve, reject) => {
+                ticketsRef.once(
+                  "value",
+                  function (snapshot) {
+                    snapshot.forEach(function (childSnapshot) {
+                      var childKey = childSnapshot.key;
+                      var childData = childSnapshot.val();
+                      console.log(childKey);
+                      console.log(childData);
+                      ticketsArray.push({ key: childKey, data: childData });
+                    });
+                    resolve(ticketsArray);
+                  },
+                  function (error) {
+                    reject(error);
+                  }
+                );
+              });
+
+              getTickets
+                .then(function (ticketsArray) {
+                  // Use tickets array here
+                  console.log(ticketsArray);
+                  createTicketElement(ticketsArray);
+                })
+                .catch(function (error) {
+                  console.error(error);
+                });
+            })
+            .catch((error) => console.error("Error updating status:", error));
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      function ticketOpen(id) {
+        // tickets[index].resolved = false;
+        // tickets[index].closed = false;
+        // tickets[index].reopen = false;
+        // tickets[index].status = "Re-opened";
+        // createTicketElement(tickets);
+
+        try {
+          ref
+            .child(id)
+            .update({
+              reopen: false,
+              closed: false,
+              resolved: false,
+              status: "Re-opened",
+            })
+            .then(() => {
+              console.log("Status updated successfully");
+
+              var ticketsArray = [];
+              var ticketsRef = firebase.database().ref("JIRA");
+
+              var getTickets = new Promise((resolve, reject) => {
+                ticketsRef.once(
+                  "value",
+                  function (snapshot) {
+                    snapshot.forEach(function (childSnapshot) {
+                      var childKey = childSnapshot.key;
+                      var childData = childSnapshot.val();
+                      console.log(childKey);
+                      console.log(childData);
+                      ticketsArray.push({ key: childKey, data: childData });
+                    });
+                    resolve(ticketsArray);
+                  },
+                  function (error) {
+                    reject(error);
+                  }
+                );
+              });
+
+              getTickets
+                .then(function (ticketsArray) {
+                  // Use tickets array here
+                  console.log(ticketsArray);
+                  createTicketElement(ticketsArray);
+                })
+                .catch(function (error) {
+                  console.error(error);
+                });
+            })
+            .catch((error) => console.error("Error updating status:", error));
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
       emailjs.init("2TezegSK_UK0wPZ_f");
-      const tickets = [];
+      let tickets = [];
+      console.log("tickets data", tickets);
       const ticketList = document.getElementById("tickets");
       const ticketForm = document.getElementById("ticket-form");
 
@@ -247,55 +552,41 @@
         const name = document.getElementById("name").value;
         const email = document.getElementById("ID").value;
         const subject = document.getElementById("subject").value;
-        const message = document.getElementById("message").value;
+        const justification = document.getElementById("message").value;
 
+        let date = new Date();
+        // let isoString =date.toTimeString();
+        let isoString = `${date.toLocaleDateString()} - ${date
+          .toTimeString()
+          .slice(0, 9)}`;
         // Create a new ticket object
         const ticket = {
           name,
           email,
           subject,
-          message,
-          createdAt: new Date(),
+          justification,
+          createdAt: isoString,
           status: "Open",
           resolved: false,
           closed: false,
           reopen: false,
-          ticketID: `IT-${Math.floor(Math.random() * 10000) + 1}`,
+          ticketID: `${Math.floor(Math.random() * 10000) + 1}`,
         };
 
-        tickets.push(ticket);
-        createTicketElement(tickets);
+        try {
+          ref.child(ticket.ticketID).set(ticket);
+        } catch (error) {
+          console.log(error);
+        }
+
+        // tickets.push(ticket);
+        // createTicketElement(tickets);
         alert(`Ticket Created, #${ticket.ticketID}`);
         sendMail(ticket.ticketID); //rendering created tickets
+
         // Clear the form
         ticketForm.reset();
       });
-
-      //progressing ticket
-      function ticketProgress(index) {
-        tickets[index].resolved = true;
-        tickets[index].status = "In Progress";
-        createTicketElement(tickets);
-      }
-      function ticketResolved(index) {
-        tickets[index].resolved = false;
-        tickets[index].closed = true;
-        tickets[index].status = "Resolved";
-        createTicketElement(tickets);
-      }
-      function ticketClosed(index) {
-        tickets[index].closed = false;
-        tickets[index].reopen = true;
-        tickets[index].status = "Closed";
-        createTicketElement(tickets);
-      }
-      function ticketOpen(index) {
-        tickets[index].resolved = false;
-        tickets[index].closed = false;
-        tickets[index].reopen = false;
-        tickets[index].status = "Re-opened";
-        createTicketElement(tickets);
-      }
 
       function createTicketElement(tickets) {
         const ticketHTML = tickets
@@ -303,33 +594,37 @@
             (ticket, index) => `
             <div>
                 <div class='ticketBody'>
-                <h2 class='tickSub'>${ticket.subject}</h3>
-                <p><strong>Associate Name:</strong> ${ticket.name}</p>
-                <p><strong>Associate ID:</strong> ${ticket.email}</p>
-                <p><strong>Justification:</strong> ${ticket.message}</p>
-                <p><strong>Created At:</strong> ${ticket.createdAt.toLocaleString()}</p>
-                <p><strong>Status:</strong> ${ticket.status}</p>
-                <p><strong>Ticket-ID:</strong> ${ticket.ticketID}</p>
+                <h2 class='tickSub'>${ticket.data.subject}</h3>
+                <p><strong>Associate Name:</strong> ${ticket.data.name}</p>
+                <p><strong>Associate ID:</strong> ${ticket.data.email}</p>
+                <p><strong>Justification:</strong> ${
+                  ticket.data.justification
+                }</p>
+                <p><strong>Created At:</strong> ${ticket.data.createdAt}</p>
+                <p><strong>Status:</strong> ${ticket.data.status}</p>
+                <p><strong>Ticket-ID:</strong> ${ticket.data.ticketID}</p>
                 <div class='btBox'>
                     ${
-                      !ticket.resolved && !ticket.closed && !ticket.reopen
-                        ? `<button class="bt" onclick="ticketProgress(${index})">mark as progress</button>`
+                      !ticket.data.resolved &&
+                      !ticket.data.closed &&
+                      !ticket.data.reopen
+                        ? `<button class="bt" onclick="ticketProgress(${ticket?.key})">mark as progress</button>`
                         : ""
                     }
                     ${
-                      ticket.resolved
-                        ? `<button class="bt" onclick="ticketResolved(${index})">mark as resolved</button>`
+                      ticket.data.resolved
+                        ? `<button class="bt" onclick="ticketResolved(${ticket.key})">mark as resolved</button>`
                         : ""
                     }
                     
                     ${
-                      ticket.closed
-                        ? `<button class="bt" onclick="ticketClosed(${index})">mark as closed</button>`
+                      ticket.data.closed
+                        ? `<button class="bt" onclick="ticketClosed(${ticket.key})">mark as closed</button>`
                         : ""
                     }
                     ${
-                      ticket.reopen
-                        ? `<button class="bt" onclick="ticketOpen(${index})">re-open</button>`
+                      ticket.data.reopen
+                        ? `<button class="bt" onclick="ticketOpen(${ticket.key})">re-open</button>`
                         : ""
                     }
                     
@@ -351,9 +646,6 @@
           message: document.getElementById("message").value,
           ticketID: ticketId,
         };
-
-        console.log(templateParams);
-        console.log(document.getElementById("name").value);
         emailjs
           .send("service_mihwf3z", "template_vrcbmul", templateParams)
           .then(
@@ -367,6 +659,38 @@
             }
           );
       }
+
+      var ticketsArray = [];
+      var ticketsRef = firebase.database().ref("JIRA");
+
+      var getTickets = new Promise((resolve, reject) => {
+        ticketsRef.once(
+          "value",
+          function (snapshot) {
+            snapshot.forEach(function (childSnapshot) {
+              var childKey = childSnapshot.key;
+              var childData = childSnapshot.val();
+              console.log(childKey);
+              console.log(childData);
+              ticketsArray.push({ key: childKey, data: childData });
+            });
+            resolve(ticketsArray);
+          },
+          function (error) {
+            reject(error);
+          }
+        );
+      });
+
+      getTickets
+        .then(function (ticketsArray) {
+          // Use tickets array here
+          console.log(ticketsArray);
+          createTicketElement(ticketsArray);
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
     </script>
   </body>
 </html>
