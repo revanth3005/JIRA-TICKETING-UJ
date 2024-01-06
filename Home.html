@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
     <style>
+
+
       body {
         background-color: black;
         color: white;
@@ -36,6 +38,13 @@
         font-size: 20px;
       }
     </style>
+     let formData = {
+      name: document.getElementById('name').value,
+      associateId: document.getElementById('ID').value,
+      summary: document.getElementById('subject').value,
+      justification: document.getElementById('message').value,
+      ticketID: ticket.ticketID
+    };
   </head>
   <body>
     <div class="placing">
