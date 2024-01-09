@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .spin-earth-on-hover {
+        transition: ease 200s !important;
+        transform: rotate(-3600deg) !important;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        font-family: "Dosis", sans-serif;
+        font-weight: 300;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      .bg-purple {
+        background: url(http://salehriaz.com/404Page/img/bg_purple.png);
+        background-repeat: repeat-x;
+        background-size: cover;
+        background-position: left top;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .custom-navbar {
+        padding-top: 15px;
+      }
+
+      .brand-logo {
+        margin-left: 25px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+
+      .navbar-links {
+        display: inline-block;
+        float: right;
+        margin-right: 15px;
+        text-transform: uppercase;
+      }
+
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      li {
+        float: left;
+        padding: 0px 15px;
+      }
+
+      li a {
+        display: block;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        letter-spacing: 2px;
+        font-size: 12px;
+
+        -webkit-transition: all 0.3s ease-in;
+        -moz-transition: all 0.3s ease-in;
+        -ms-transition: all 0.3s ease-in;
+        -o-transition: all 0.3s ease-in;
+        transition: all 0.3s ease-in;
+      }
+
+      li a:hover {
+        color: #ffcb39;
+      }
+
+      .btn-request {
+        padding: 10px 25px;
+        border: 1px solid #ffcb39;
+        border-radius: 100px;
+        font-weight: 400;
+      }
+
+      .btn-request:hover {
+        background-color: #ffcb39;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-go-home {
+        position: relative;
+        z-index: 200;
+        margin: 15px auto;
+        width: 100px;
+        padding: 10px 15px;
+        border: 1px solid #ffcb39;
+        border-radius: 100px;
+        font-weight: 400;
+        display: block;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        letter-spacing: 2px;
+        font-size: 11px;
+
+        -webkit-transition: all 0.3s ease-in;
+        -moz-transition: all 0.3s ease-in;
+        -ms-transition: all 0.3s ease-in;
+        -o-transition: all 0.3s ease-in;
+        transition: all 0.3s ease-in;
+      }
+
+      .btn-go-home:hover {
+        background-color: #ffcb39;
+        color: #fff;
+        transform: scale(1.05);
+        box-shadow: 0px 20px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .central-body {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-content: center;
+        align-items: center;
+        padding: 5% 5% 10% 5%;
+        text-align: center;
+      }
+      span {
+        color: white;
+      }
+
+      .stars {
+        background: url(http://salehriaz.com/404Page/img/overlay_stars.svg);
+        background-repeat: repeat;
+        background-size: contain;
+        background-position: left top;
+      }
+
+      .glowing_stars .star {
+        position: absolute;
+        border-radius: 100%;
+        background-color: #fff;
+        width: 3px;
+        height: 3px;
+        opacity: 0.3;
+        will-change: opacity;
+      }
+
+      .glowing_stars .star:nth-child(1) {
+        top: 80%;
+        left: 25%;
+        animation: glow-star 2s infinite ease-in-out alternate 1s;
+      }
+      .glowing_stars .star:nth-child(2) {
+        top: 20%;
+        left: 40%;
+        animation: glow-star 2s infinite ease-in-out alternate 3s;
+      }
+      .glowing_stars .star:nth-child(3) {
+        top: 25%;
+        left: 25%;
+        animation: glow-star 2s infinite ease-in-out alternate 5s;
+      }
+      .glowing_stars .star:nth-child(4) {
+        top: 75%;
+        left: 80%;
+        animation: glow-star 2s infinite ease-in-out alternate 7s;
+      }
+      .glowing_stars .star:nth-child(5) {
+        top: 90%;
+        left: 50%;
+        animation: glow-star 2s infinite ease-in-out alternate 9s;
+      }
+      p {
+        font-size: 20px;
+        color: white;
+      }
+      .sc {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        /* max-width: 250px; */
+      }
+      h1 {
+        padding-top: 30px;
+        font-size: 3em;
+        margin: 0;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 1.5s ease-out 1s forwards;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .underline {
+        display: inline-block;
+        position: relative;
+        padding-bottom: 8px;
+        animation: drawUnderline 1.5s ease-out 2s forwards;
+      }
+
+      .underline::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: #3498db;
+        left: 0;
+        bottom: 0;
+        transform: scaleX(0);
+        transform-origin: right;
+        animation: scaleXIn 0.5s ease-out 2.5s forwards;
+      }
+
+      @keyframes drawUnderline {
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes scaleXIn {
+        to {
+          transform: scaleX(1);
+        }
+      }
+      @media only screen and (max-width: 600px) {
+        .navbar-links {
+          display: none;
+        }
+
+        .custom-navbar {
+          text-align: center;
+        }
+
+        .brand-logo img {
+          width: 120px;
+        }
+
+        .box_astronaut {
+          top: 70%;
+        }
+
+        .central-body {
+          /* padding-top: 25%; */
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          align-content: center;
+          align-items: center;
+          color: white;
+          justify-content: center;
+        }
+        .sc {
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+          max-width: 250px;
+        }
+        img {
+          width: 200px;
+        }
+        h1 {
+          font-size: 2em;
+          margin: 0;
+          opacity: 0;
+          transform: translateY(20px);
+          animation: fadeInUp 1.5s ease-out 1s forwards;
+        }
+      }
+      img {
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body class="bg-purple">
+    <div class="stars">
+      <div class="central-body">
+        <img class="image-404" src="1.jpg" width="300px" />
+
+        <h1>
+          <span class="underline">Under Maintenance</span>
+        </h1>
+        <div class="sc">
+          <p>
+            Due to scheduled upgrade, jira will experience a temporary outage
+            from JAN 26 1:00 PM TO JAN 27 1:00 PM
+          </p>
+          <a
+            href="http://salehriaz.com/404Page/404.html"
+            class="btn-go-home"
+            target="_blank"
+            >CLICK HERE</a
+          >
+        </div>
+      </div>
+
+      <div class="glowing_stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+      </div>
+    </div>
+  </body>
+</html>
